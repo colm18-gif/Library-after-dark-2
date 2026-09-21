@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Library After Dark 2</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="world" aria-label="Library After Dark 2"></canvas>
+  <div id="veil">
+    <div class="crest">✦</div>
+    <p class="eyebrow">A PERFORMANCE-FIRST VERTICAL SLICE</p>
+    <h1>Library After Dark</h1>
+    <p>Wander a small, candlelit hall. Take a book down. Find the door that does not belong.</p>
+    <button id="enter">Enter the library</button>
+    <p class="controls">WASD to walk · mouse to look · E to interact · F3 performance</p>
+  </div>
+  <div id="hud" aria-live="polite">
+    <span id="prompt"></span>
+    <span id="status">Grand Hall</span>
+  </div>
+  <div id="monitor" hidden></div>
+  <aside id="reader" hidden>
+    <button id="close-reader" aria-label="Close reader">×</button>
+    <p id="reader-author"></p>
+    <h2 id="reader-title"></h2>
+    <div id="reader-copy"></div>
+  </aside>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
