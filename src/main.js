@@ -16,12 +16,14 @@ camera.position.copy(player);scene.add(camera);
 scene.add(new THREE.HemisphereLight(0xb49370,0x21150d,2.35));
 const warmLight=new THREE.PointLight(0xf2c77b,42,21,2);warmLight.position.set(0,5,1);scene.add(warmLight);
 
+function materialTexture(base,mark,lines=false){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.fillStyle=base;x.fillRect(0,0,128,128);for(let i=0;i<900;i++){x.globalAlpha=.035+Math.random()*.08;x.fillStyle=mark;const px=Math.random()*128,py=Math.random()*128;x.fillRect(px,py,lines?8+Math.random()*36:1+Math.random()*3,lines?.35:1+Math.random()*2)}x.globalAlpha=.12;for(let y=5;y<128;y+=9+Math.random()*6){x.fillStyle=mark;x.fillRect(0,y,128,lines?.6:1)}x.globalAlpha=1;const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;return t}
+const oakTexture=materialTexture('#4a2b18','#170c07',true),darkOakTexture=materialTexture('#241109','#75431f',true),leatherTexture=materialTexture('#5b1d22','#e0a06e',false),paperTexture=materialTexture('#d8c699','#7c5d38',false);
 const MAT={
- wood:new THREE.MeshStandardMaterial({color:0x3a2011,roughness:.8}),
- darkWood:new THREE.MeshStandardMaterial({color:0x1c0e08,roughness:.78}),
- leather:new THREE.MeshStandardMaterial({color:0x592024,roughness:.92}),
+ wood:new THREE.MeshStandardMaterial({color:0x8a623e,map:oakTexture,roughness:.78}),
+ darkWood:new THREE.MeshStandardMaterial({color:0x4a2b1b,map:darkOakTexture,roughness:.72}),
+ leather:new THREE.MeshStandardMaterial({color:0x8e3432,map:leatherTexture,roughness:.88}),
  brass:new THREE.MeshStandardMaterial({color:0x9a6a28,metalness:.7,roughness:.36}),
- paper:new THREE.MeshStandardMaterial({color:0xd8c699,roughness:.88}),
+ paper:new THREE.MeshStandardMaterial({color:0xd8c699,map:paperTexture,roughness:.88}),
  candle:new THREE.MeshStandardMaterial({color:0xf2b85d,emissive:0xd97925,emissiveIntensity:2.5,roughness:.65})
 };
 // Simple X/Z boxes keep furniture solid without a physics engine or per-frame mesh tests.
@@ -40,6 +42,9 @@ const rug=new THREE.Mesh(new THREE.PlaneGeometry(8,13),new THREE.MeshStandardMat
 function chair(x,z,rot=0,parent=hall){const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=rot;parent.add(g);box(2,.45,1.8,MAT.leather,0,.78,0,g);box(2,2.2,.35,MAT.leather,0,1.72,.67,g);for(const dx of [-.83,.83])box(.26,.75,1.65,MAT.wood,dx,.66,0,g);for(const dx of [-.82,.82])for(const dz of [-.63,.63])box(.18,.8,.18,MAT.darkWood,dx,.4,dz,g);addCollider(x,z,2.05,1.9)}
 chair(-4,1,.55);chair(4,1,-.55);chair(-4,-4,.9);chair(4,-4,-.9);
 box(5,.22,2,MAT.wood,0,1.25,-1,hall);for(const x of [-2.1,2.1])for(const z of [-.75,.75])box(.2,1.2,.2,MAT.darkWood,x,.6,-1+z,hall);addCollider(0,-1,5.15,2.15);
+// A handful of shared-geometry props make the desk feel lived in without becoming a new asset budget.
+for(const [x,y,z,w,d,colour] of [[-1.5,1.43,-1.15,.62,.46,0x3c4b2d],[-1.42,1.53,-1.15,.5,.38,0x552522],[1.2,1.43,-.72,.55,.4,0x273844]])box(w,.1,d,new THREE.MeshStandardMaterial({color:colour,map:leatherTexture,roughness:.82}),x,y,z,hall);
+const deskGlobe=new THREE.Group();deskGlobe.position.set(1.72,1.56,-1.18);hall.add(deskGlobe);const globe=new THREE.Mesh(new THREE.SphereGeometry(.28,16,10),new THREE.MeshStandardMaterial({color:0x32505a,roughness:.72,metalness:.08}));deskGlobe.add(globe);const globeRing=new THREE.Mesh(new THREE.TorusGeometry(.31,.025,6,18),MAT.brass);globeRing.rotation.x=Math.PI/2.4;deskGlobe.add(globeRing);box(.42,.07,.22,MAT.darkWood,0,-.36,0,deskGlobe);
 const readingSpots=[[-4,1], [4,1], [-4,-4], [4,-4], [0,1]].map(([x,z])=>new THREE.Vector3(x,1.68,z));
 const returnSpot=new THREE.Vector3(0,1.68,1);
 
