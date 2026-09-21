@@ -7,14 +7,14 @@ const reader=document.querySelector('#reader'),readerTitle=document.querySelecto
 const lowPower=matchMedia('(pointer:coarse)').matches||(navigator.deviceMemory&&navigator.deviceMemory<=4);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:!lowPower,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,lowPower?.8:1));renderer.setSize(innerWidth,innerHeight,false);
-renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.65;
+renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=2.05;
 
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x100c09);scene.fog=new THREE.FogExp2(0x100c09,.04);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x1b130e);scene.fog=new THREE.FogExp2(0x1b130e,.022);
 const camera=new THREE.PerspectiveCamera(66,innerWidth/innerHeight,.1,55);
 const clock=new THREE.Clock(),keys={},player=new THREE.Vector3(0,1.68,11),look={yaw:Math.PI,pitch:0};
 camera.position.copy(player);scene.add(camera);
-scene.add(new THREE.HemisphereLight(0x8f7657,0x100c09,1.7));
-const warmLight=new THREE.PointLight(0xe9b96e,25,19,2);warmLight.position.set(0,5,1);scene.add(warmLight);
+scene.add(new THREE.HemisphereLight(0xb49370,0x21150d,2.35));
+const warmLight=new THREE.PointLight(0xf2c77b,42,21,2);warmLight.position.set(0,5,1);scene.add(warmLight);
 
 const MAT={
  wood:new THREE.MeshStandardMaterial({color:0x3a2011,roughness:.8}),
@@ -62,7 +62,7 @@ function interact(){if(!veil.classList.contains('leaving')||!reader.hidden)retur
 
 let monitorOn=false,last=performance.now(),frames=0,started=false;
 function setPrompt(){if(!started||!reader.hidden){prompt.style.opacity=0;return}const nearDoor=activeRoom==='Grand Hall'&&player.distanceToSquared(new THREE.Vector3(0,1.68,-10.5))<15;const nearBook=bookPositions.some(item=>item.position.distanceToSquared(player)<6.5);prompt.textContent=nearDoor?'E  —  enter the hidden room':nearBook?'E  —  take a book':' ';prompt.style.opacity=(nearDoor||nearBook)?1:0}
-function animate(now){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);if(started&&reader.hidden){const speed=keys.ShiftLeft?4.5:2.6;const forward=new THREE.Vector3(Math.sin(look.yaw),0,Math.cos(look.yaw)),right=new THREE.Vector3(forward.z,0,-forward.x),move=new THREE.Vector3();if(keys.KeyW)move.add(forward);if(keys.KeyS)move.sub(forward);if(keys.KeyA)move.sub(right);if(keys.KeyD)move.add(right);if(move.lengthSq()){move.normalize().multiplyScalar(speed*dt);player.add(move);const limit=activeRoom==='Grand Hall'?8.4:5;player.x=THREE.MathUtils.clamp(player.x,-limit,limit);player.z=activeRoom==='Grand Hall'?THREE.MathUtils.clamp(player.z,-11,11):THREE.MathUtils.clamp(player.z,-31.5,-22.5)}camera.position.copy(player);camera.rotation.set(look.pitch,look.yaw,0,'YXZ');setPrompt()}renderer.render(scene,camera);frames++;if(now-last>1000){if(monitorOn){const r=renderer.info.render;monitor.textContent=`${Math.round(frames*1000/(now-last))} FPS\n${r.calls} draw calls\n${Math.round(r.triangles/1000)}k triangles\nroom: ${activeRoom}`}last=now;frames=0}}
+function animate(now){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);if(started&&reader.hidden){const speed=keys.ShiftLeft?4.5:2.6;const forward=new THREE.Vector3(-Math.sin(look.yaw),0,-Math.cos(look.yaw)),right=new THREE.Vector3(-forward.z,0,forward.x),move=new THREE.Vector3();if(keys.KeyW)move.add(forward);if(keys.KeyS)move.sub(forward);if(keys.KeyA)move.sub(right);if(keys.KeyD)move.add(right);if(move.lengthSq()){move.normalize().multiplyScalar(speed*dt);player.add(move);const limit=activeRoom==='Grand Hall'?8.4:5;player.x=THREE.MathUtils.clamp(player.x,-limit,limit);player.z=activeRoom==='Grand Hall'?THREE.MathUtils.clamp(player.z,-11,11):THREE.MathUtils.clamp(player.z,-31.5,-22.5)}camera.position.copy(player);camera.rotation.set(look.pitch,look.yaw,0,'YXZ');setPrompt()}renderer.render(scene,camera);frames++;if(now-last>1000){if(monitorOn){const r=renderer.info.render;monitor.textContent=`${Math.round(frames*1000/(now-last))} FPS\n${r.calls} draw calls\n${Math.round(r.triangles/1000)}k triangles\nroom: ${activeRoom}`}last=now;frames=0}}
 animate();
 
 enter.addEventListener('click',()=>{started=true;veil.classList.add('leaving');canvas.requestPointerLock?.()});
